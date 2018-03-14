@@ -9,11 +9,15 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 import random
+import base64
 
 BOT_NAME = 'lianjia'
 
 SPIDER_MODULES = ['lianjia.spiders']
 NEWSPIDER_MODULE = 'lianjia.spiders'
+
+MONGO_URI = 'localhost'
+MONGO_DB = 'secondhand'
 
 
 # 城市二手房与网址对应关系（所有城市中剔除旅游城市、太原和昆明两个特殊网址）
@@ -91,6 +95,7 @@ USER_AGENT = random.choice(USER_AGENT_LIST)
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
+FEED_EXPORT_ENCODING = 'utf-8'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -98,7 +103,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0.2
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -123,9 +128,10 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'lianjia.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   # 'lianjia.middlewares.MyCustomDownloaderMiddleware': 543,
+   'lianjia.middlewares.ProxyMiddleware': 200
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -135,9 +141,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'lianjia.pipelines.LianjiaPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   # 'lianjia.pipelines.LianjiaPipeline': 300,
+   'lianjia.pipelines.MongoPipeline': 500,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -159,3 +166,11 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+RETRY_TIMES = 4
+
+PROXY_ENABLED = True
+PROXY_SERVER = "http://http-dyn.abuyun.com:9020"
+PROXY_USER = ""  # 通行证书
+PROXY_PASS = ""  # 通行密钥
+PROXY_AUTH = "Basic " + base64.urlsafe_b64encode(bytes((PROXY_USER + ":" + PROXY_PASS), "ascii")).decode("utf8")

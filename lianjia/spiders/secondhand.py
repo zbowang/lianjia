@@ -13,13 +13,13 @@ class SecondHandSpider(scrapy.Spider):
         self.baseurl = CITY2URL[self.city]
         self.community_info = {}
     
-    # def start_requests(self):
-    #     url =  self.baseurl + '/ershoufang/'
-    #     yield scrapy.Request(url=url, callback = self.parse_first, dont_filter = True)
-
     def start_requests(self):
-        url =  'https://sh.lianjia.com/ershoufang/pudong/a4p1/'
-        yield scrapy.Request(url=url, callback = self.parse_room, dont_filter = True)
+        url =  self.baseurl + '/ershoufang/'
+        yield scrapy.Request(url=url, callback = self.parse_first, dont_filter = True)
+
+    # def start_requests(self):
+    #     url =  'https://sh.lianjia.com/ershoufang/pudong/a4p1/'
+    #     yield scrapy.Request(url=url, callback = self.parse_room, dont_filter = True)
     
     
 
@@ -118,7 +118,7 @@ class SecondHandSpider(scrapy.Spider):
         item['house_info_desc'] = ''.join(i.strip() for i in house_info_desc)
         item['house_info_released_time'] = response.xpath('//div[@class="transaction"]//ul/li[1]/span[2]/text()').extract_first()
         item['house_info_last_trade_time'] = response.xpath('//div[@class="transaction"]//ul/li[3]/span[2]/text()').extract_first()
-        item['house_info_tags'] = response.css('.introContent .tags .content a::text').extract()
+        item['house_info_tags'] = ' '.join(response.css('.introContent .tags .content a::text').extract())
         item['house_info_position'] = response.css('script').re_first("resblockPosition:'(.*?)'")
         item['house_info_rooms'] = response.xpath('//div[@class="base"]//li[1]/text()').extract_first()
         item['house_num_area'] = response.xpath('//div[@class="base"]//li[3]/text()').extract_first()[:-1]
@@ -143,13 +143,13 @@ class SecondHandSpider(scrapy.Spider):
         item['y_seen30'] = response.css('.totalCount span::text').extract_first()
         item['house_char_visit_time'] = response.css('.visitTime .info::text').extract_first()
         item['house_district'] = response.css('.areaName .info a::text').extract_first()
-        item['house_site'] = response.css('.areaName .info a::text').extract()[1:]
+        item['house_site'] = ' '.join(response.css('.areaName .info a::text').extract()[1:])
         community_name = response.css('.communityName a::text').extract_first()
         if community_name in self.community_info.keys():
             item['community_name'] = self.community_info[community_name]['community_name']
             item['community_url'] = self.community_info[community_name]['community_url']
             item['community_mean_price'] = self.community_info[community_name]['community_mean_price']
-            item['community_mean_price_urit'] = self.community_info[community_name]['community_mean_price_urit']
+            item['community_mean_price_unit'] = self.community_info[community_name]['community_mean_price_unit']
             item['community_help_fee'] = self.community_info[community_name]['community_help_fee']
             item['community_building_num'] = self.community_info[community_name]['community_building_num']
             item['community_house_num'] = self.community_info[community_name]['community_house_num']
@@ -165,7 +165,7 @@ class SecondHandSpider(scrapy.Spider):
         community_name = response.css('.detailTitle::text').extract_first()
         community_url = response.url
         community_mean_price = response.css('.xiaoquUnitPrice::text').extract_first()
-        community_mean_price_urit = response.css('.xiaoquPrice .fl::text').extract_first()
+        community_mean_price_unit = response.css('.xiaoquPrice .fl::text').extract_first()
         community_help_fee = response.xpath('//div[@class="xiaoquInfo"]/div[3]/span[2]/text()').extract_first()
         community_building_num = response.xpath('//div[@class="xiaoquInfo"]/div[6]/span[2]/text()').extract_first()[:-1]
         community_house_num = response.xpath('//div[@class="xiaoquInfo"]/div[7]/span[2]/text()').extract_first()[:-1]
@@ -174,7 +174,7 @@ class SecondHandSpider(scrapy.Spider):
         'community_name': community_name,
         'community_url': community_url,
         'community_mean_price': community_mean_price,
-        'community_mean_price_urit': community_mean_price_urit,
+        'community_mean_price_unit': community_mean_price_unit,
         'community_help_fee': community_help_fee,
         'community_building_num': community_building_num,
         'community_house_num': community_house_num
@@ -184,7 +184,7 @@ class SecondHandSpider(scrapy.Spider):
         item['community_name'] = community_name
         item['community_url'] = community_url
         item['community_mean_price'] = community_mean_price
-        item['community_mean_price_urit'] = community_mean_price_urit
+        item['community_mean_price_unit'] = community_mean_price_unit
         item['community_help_fee'] = community_help_fee
         item['community_building_num'] = community_building_num
         item['community_house_num'] = community_house_num

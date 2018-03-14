@@ -49,7 +49,7 @@ class SecondHandItem(scrapy.Item):
     community_name = scrapy.Field()
     community_url = scrapy.Field()
     community_mean_price = scrapy.Field()
-    community_mean_price_urit = scrapy.Field()
+    community_mean_price_unit = scrapy.Field()
     community_help_fee = scrapy.Field()
     community_building_num = scrapy.Field()
     community_house_num = scrapy.Field()

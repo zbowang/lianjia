@@ -6,6 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 
 
 class LianjiaSpiderMiddleware(object):
@@ -54,3 +55,22 @@ class LianjiaSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+# 设置阿布云代理
+class ProxyMiddleware(UserAgentMiddleware):
+
+    def __init__(self, proxyServer, proxyAuth):
+        self.proxyServer = proxyServer
+        self.proxyAuth = proxyAuth
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            proxyAuth=crawler.settings.get('PROXY_AUTH'),
+            proxyServer=crawler.settings.get('PROXY_SERVER')
+        )
+
+    def process_request(self, request, spider):
+            request.meta["proxy"] = self.proxyServer
+            request.headers["Proxy-Authorization"] = self.proxyAuth
+
