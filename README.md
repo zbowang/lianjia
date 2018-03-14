@@ -11,7 +11,7 @@
 
 ## 启动爬虫之前
 
-1.首先要安装好scrapy爬虫框架和配置好mongodb框架
+1.首先要安装好scrapy爬虫框架和配置好mongodb数据库
 
 2.这里代理使用阿布云动态版，需要到网站上购买，再将通行证书和通行密钥配置到settings.py文件中（`PROXY_USER`和`PROXY_PASS`）
 
